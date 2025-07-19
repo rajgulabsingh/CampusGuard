@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusGuard | Anonymous Reporting</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #ff6b35;
+      --secondary: #ff9e1b;
+      --accent: #ffd166;
+      --dark: #5a2a0a;
+      --light: #fff8f0;
+      --success: #4ade80;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+    
+    body {
+      background: linear-gradient(135deg, #ffb347 0%, #ffcc33 100%);
+      min-height: 100vh;
+      color: #333;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    .glass-card {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      overflow: hidden;
+      transition: all 0.3s ease;
+      margin-bottom: 30px;
+    }
+    
+    .glass-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+    }
+    
+    header {
+      text-align: center;
+      padding: 40px 20px;
+      color: white;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 30px;
+    }
+    
+    .header-content {
+      position: relative;
+      z-index: 2;
+    }
+    
+    .header-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle, rgba(255, 107, 53, 0.3) 0%, rgba(90, 42, 10, 0.2) 100%);
+      z-index: 1;
+    }
+    
+    h1 {
+      font-size: 3.5rem;
+      font-weight: 700;
+      margin-bottom: 15px;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      color: white;
+    }
+    
+    .subtitle {
+      font-size: 1.4rem;
+      max-width: 700px;
+      margin: 0 auto 30px;
+      color: rgba(255, 255, 255, 0.9);
+    }
+    
+    .card-title {
+      font-size: 1.6rem;
+      font-weight: 600;
+      margin-bottom: 25px;
+      color: var(--dark);
+      position: relative;
+      padding-bottom: 10px;
+    }
+    
+    .card-title::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 60px;
+      height: 4px;
+      background: var(--primary);
+      border-radius: 2px;
+    }
+    
+    .form-control, .form-select {
+      background: rgba(255, 255, 255, 0.7);
+      border: none;
+      border-radius: 10px;
+      padding: 12px 15px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+    }
+    
+    .form-control:focus, .form-select:focus {
+      background: white;
+      box-shadow: 0 4px 15px rgba(255, 107, 53, 0.25);
+      border: none;
+      outline: none;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border: none;
+      border-radius: 50px;
+      padding: 14px 30px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      box-shadow: 0 5px 15px rgba(255, 107, 53, 0.4);
+      transition: all 0.3s ease;
+      width: 100%;
+      margin-top: 10px;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(255, 107, 53, 0.6);
+      color: white;
+    }
+    
+    .btn-secondary {
+      background: var(--accent);
+      border: none;
+      border-radius: 50px;
+      padding: 10px 20px;
+      font-weight: 500;
+      color: var(--dark);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+    
+    .btn-secondary:hover {
+      background: #ffc44d;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+      color: var(--dark);
+    }
+    
+    .complaints-list {
+      max-height: 600px;
+      overflow-y: auto;
+      padding-right: 10px;
+    }
+    
+    .complaint-item {
+      background: white;
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      border-left: 5px solid var(--primary);
+      transition: all 0.3s ease;
+    }
+    
+    .complaint-item:hover {
+      transform: translateX(5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .complaint-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    
+    .complaint-title {
+      font-weight: 600;
+      font-size: 1.2rem;
+      color: var(--dark);
+    }
+    
+    .complaint-category {
+      background: var(--primary);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+    
+    .complaint-desc {
+      color: #555;
+      margin-bottom: 15px;
+      line-height: 1.6;
+    }
+    
+    .complaint-meta {
+      display: flex;
+      justify-content: space-between;
+      color: #777;
+      font-size: 0.9rem;
+    }
+    
+    .status-badge {
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-weight: 500;
+      font-size: 0.85rem;
+      text-align: center;
+      min-width: 120px;
+    }
+    
+    .status-submitted {
+      background: rgba(255, 107, 53, 0.2);
+      color: var(--primary);
+    }
+    
+    .status-review {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--warning);
+    }
+    
+    .status-escalated {
+      background: rgba(239, 68, 68, 0.2);
+      color: var(--danger);
+    }
+    
+    .status-resolved {
+      background: rgba(74, 222, 128, 0.2);
+      color: var(--success);
+    }
+    
+    .admin-panel {
+      display: none;
+    }
+    
+    .admin-controls {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    
+    .admin-select {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 5px 10px;
+      font-size: 0.9rem;
+    }
+    
+    .filter-bar {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    
+    .filter-select {
+      flex: 1;
+      min-width: 180px;
+    }
+    
+    .login-container {
+      max-width: 500px;
+      margin: 50px auto;
+    }
+    
+    .tabs {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 30px;
+      gap: 20px;
+    }
+    
+    .tab-btn {
+      background: rgba(255, 255, 255, 0.5);
+      border: none;
+      padding: 15px 30px;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: var(--dark);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .tab-btn.active {
+      background: white;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+    }
+    
+    .tab-btn:hover:not(.active) {
+      background: rgba(255, 255, 255, 0.7);
+    }
+    
+    .view-section {
+      display: none;
+    }
+    
+    .view-section.active {
+      display: block;
+    }
+    
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 25px;
+      border-radius: 10px;
+      background: white;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transform: translateX(200%);
+      transition: transform 0.3s ease;
+    }
+    
+    .notification.show {
+      transform: translateX(0);
+    }
+    
+    .notification.success {
+      border-left: 4px solid var(--success);
+    }
+    
+    .notification.error {
+      border-left: 4px solid var(--danger);
+    }
+    
+    .notification i {
+      font-size: 1.5rem;
+    }
+    
+    .pulse {
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(255, 107, 53, 0.5); }
+      70% { box-shadow: 0 0 0 15px rgba(255, 107, 53, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(255, 107, 53, 0); }
+    }
+    
+    /* Scrollbar styling */
+    .complaints-list::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    .complaints-list::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+    }
+    
+    .complaints-list::-webkit-scrollbar-thumb {
+      background: var(--primary);
+      border-radius: 10px;
+    }
+    
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2.5rem;
+      }
+      
+      .subtitle {
+        font-size: 1.1rem;
+      }
+      
+      .filter-bar {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="notification" id="notification">
+    <i class="fas fa-check-circle text-success"></i>
+    <div>
+      <div class="fw-bold" id="notif-title">Success!</div>
+      <div id="notif-message">Your complaint has been submitted</div>
+    </div>
+  </div>
+  
+  <div class="container">
+    <header>
+      <div class="header-bg"></div>
+      <div class="header-content">
+        <h1><i class="fas fa-shield-alt me-3"></i>CampusGuard</h1>
+        <p class="subtitle">Safe and anonymous reporting for campus issues</p>
+      </div>
+    </header>
+    
+    <div class="tabs">
+      <button class="tab-btn active" data-view="studentView">Student Portal</button>
+      <button class="tab-btn" data-view="adminLoginView">Admin Login</button>
+    </div>
+    
+    <!-- Student View -->
+    <div id="studentView" class="view-section active">
+      <div class="glass-card p-4 p-lg-5">
+        <h3 class="card-title">Submit Anonymous Report</h3>
+        <form id="reportForm">
+          <div class="mb-3">
+            <label class="form-label">Category</label>
+            <select class="form-select" id="category" required>
+              <option value="">Choose a category</option>
+              <option value="Harassment">Harassment</option>
+              <option value="Ragging">Ragging/Bullying</option>
+              <option value="Mental Health">Mental Health Concern</option>
+              <option value="Academic">Academic Misconduct</option>
+              <option value="Facilities">Facility Issue</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          
+          <div class="mb-3">
+            <label class="form-label">Complaint Title</label>
+            <input type="text" class="form-control" id="title" placeholder="Brief title" required>
+          </div>
+          
+          <div class="mb-3">
+            <label class="form-label">Description</label>
+            <textarea class="form-control" id="description" rows="5" placeholder="Describe the issue in detail..." required></textarea>
+          </div>
+          
+          <button type="submit" class="btn btn-primary pulse">
+            <i class="fas fa-paper-plane me-2"></i>Submit Anonymously
+          </button>
+        </form>
+      </div>
+      
+      <div class="glass-card p-4 p-lg-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h3 class="card-title mb-0">Recent Reports</h3>
+          <span class="badge bg-primary rounded-pill" id="complaintCount">3</span>
+        </div>
+        
+        <div class="complaints-list" id="complaintsList">
+          <div class="complaint-item">
+            <div class="complaint-header">
+              <div class="complaint-title">Inappropriate Comments in Class</div>
+              <div class="complaint-category">Harassment</div>
+            </div>
+            <div class="complaint-desc">
+              Professor made inappropriate remarks during lecture that made students uncomfortable...
+            </div>
+            <div class="complaint-meta">
+              <div><i class="fas fa-clock me-1"></i>2 hours ago</div>
+              <div class="status-badge status-submitted">Submitted</div>
+            </div>
+          </div>
+          
+          <div class="complaint-item">
+            <div class="complaint-header">
+              <div class="complaint-title">Broken Lab Equipment</div>
+              <div class="complaint-category">Facilities</div>
+            </div>
+            <div class="complaint-desc">
+              Chemistry lab equipment not functioning properly, creating safety hazards for students...
+            </div>
+            <div class="complaint-meta">
+              <div><i class="fas fa-clock me-1"></i>1 day ago</div>
+              <div class="status-badge status-resolved">Resolved</div>
+            </div>
+          </div>
+          
+          <div class="complaint-item">
+            <div class="complaint-header">
+              <div class="complaint-title">Bullying in Dormitory</div>
+              <div class="complaint-category">Ragging</div>
+            </div>
+            <div class="complaint-desc">
+              Ongoing harassment from senior students targeting first-year students in the dorm...
+            </div>
+            <div class="complaint-meta">
+              <div><i class="fas fa-clock me-1"></i>2 days ago</div>
+              <div class="status-badge status-submitted">Submitted</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Admin Login View -->
+    <div id="adminLoginView" class="view-section">
+      <div class="login-container">
+        <div class="glass-card p-5 text-center">
+          <h3 class="card-title mb-4">Admin Login</h3>
+          <form id="adminLoginForm">
+            <div class="mb-4">
+              <input type="text" class="form-control" id="username" placeholder="Username" required>
+            </div>
+            <div class="mb-4">
+              <input type="password" class="form-control" id="password" placeholder="Password" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">
+              <i class="fas fa-sign-in-alt me-2"></i>Login
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Admin Dashboard View -->
+    <div id="adminDashboardView" class="view-section">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold"><i class="fas fa-tachometer-alt me-2"></i>Admin Dashboard</h2>
+        <button id="logoutBtn" class="btn btn-secondary">
+          <i class="fas fa-sign-out-alt me-1"></i>Logout
+        </button>
+      </div>
+      
+      <div class="filter-bar">
+        <select class="form-select filter-select" id="filterCategory">
+          <option value="">All Categories</option>
+          <option value="Harassment">Harassment</option>
+          <option value="Ragging">Ragging</option>
+          <option value="Mental Health">Mental Health</option>
+          <option value="Academic">Academic</option>
+          <option value="Facilities">Facilities</option>
+          <option value="Other">Other</option>
+        </select>
+        
+        <select class="form-select filter-select" id="filterStatus">
+          <option value="">All Statuses</option>
+          <option value="Submitted">Submitted</option>
+          <option value="Under Review">Under Review</option>
+          <option value="Escalated">Escalated</option>
+          <option value="Resolved">Resolved</option>
+        </select>
+        
+        <button class="btn btn-secondary" id="resetFilters">
+          <i class="fas fa-sync-alt me-1"></i>Reset Filters
+        </button>
+      </div>
+      
+      <div class="glass-card p-4 p-lg-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h3 class="card-title mb-0">Manage Complaints</h3>
+          <div class="badge bg-primary rounded-pill" id="adminComplaintCount">5</div>
+        </div>
+        
+        <div class="complaints-list" id="adminComplaintsList">
+          <!-- Admin will see all complaints here -->
+        </div>
+      </div>
+    </div>
+    
+    <footer class="text-center text-white mt-5">
+      <p>© 2023 CampusGuard - Secure Campus Reporting System</p>
+      <p class="mt-2">
+        <i class="fas fa-lock me-1"></i>All reports are encrypted and stored securely
+      </p>
+    </footer>
+  </div>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // DOM Elements
+      const tabs = document.querySelectorAll('.tab-btn');
+      const views = document.querySelectorAll('.view-section');
+      const reportForm = document.getElementById('reportForm');
+      const complaintsList = document.getElementById('complaintsList');
+      const adminLoginForm = document.getElementById('adminLoginForm');
+      const adminDashboardView = document.getElementById('adminDashboardView');
+      const adminComplaintsList = document.getElementById('adminComplaintsList');
+      const logoutBtn = document.getElementById('logoutBtn');
+      const notification = document.getElementById('notification');
+      const notifTitle = document.getElementById('notif-title');
+      const notifMessage = document.getElementById('notif-message');
+      const filterCategory = document.getElementById('filterCategory');
+      const filterStatus = document.getElementById('filterStatus');
+      const resetFilters = document.getElementById('resetFilters');
+      
+      // Sample complaints data
+      let complaints = JSON.parse(localStorage.getItem('complaints')) || [
+        {
+          id: 1,
+          category: "Harassment",
+          title: "Inappropriate Comments in Class",
+          description: "Professor made inappropriate remarks during lecture that made students uncomfortable...",
+          timestamp: "2023-10-15 14:30",
+          status: "Submitted"
+        },
+        {
+          id: 2,
+          category: "Facilities",
+          title: "Broken Lab Equipment",
+          description: "Chemistry lab equipment not functioning properly, creating safety hazards for students...",
+          timestamp: "2023-10-14 10:15",
+          status: "Resolved"
+        },
+        {
+          id: 3,
+          category: "Ragging",
+          title: "Bullying in Dormitory",
+          description: "Ongoing harassment from senior students targeting first-year students in the dorm...",
+          timestamp: "2023-10-13 18:45",
+          status: "Submitted"
+        },
+        {
+          id: 4,
+          category: "Academic",
+          title: "Grading Inconsistencies",
+          description: "Significant discrepancies in grading practices between different sections of the same course...",
+          timestamp: "2023-10-12 09:20",
+          status: "Under Review"
+        },
+        {
+          id: 5,
+          category: "Mental Health",
+          title: "Counseling Services Overwhelmed",
+          description: "Extremely long wait times for mental health counseling services on campus...",
+          timestamp: "2023-10-10 15:40",
+          status: "Escalated"
+        }
+      ];
+      
+      // Save to localStorage
+      localStorage.setItem('complaints', JSON.stringify(complaints));
+      
+      // Tab switching
+      tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+          const view = this.getAttribute('data-view');
+          
+          // Update tabs
+          tabs.forEach(t => t.classList.remove('active'));
+          this.classList.add('active');
+          
+          // Update views
+          views.forEach(v => v.classList.remove('active'));
+          document.getElementById(view).classList.add('active');
+        });
+      });
+      
+      // Show notification
+      function showNotification(title, message, isSuccess = true) {
+        notifTitle.textContent = title;
+        notifMessage.textContent = message;
+        notification.className = `notification ${isSuccess ? 'success' : 'error'}`;
+        notification.classList.add('show');
+        
+        setTimeout(() => {
+          notification.classList.remove('show');
+        }, 3000);
+      }
+      
+      // Render complaints for students
+      function renderStudentComplaints() {
+        complaintsList.innerHTML = '';
+        const recentComplaints = complaints.slice(0, 3);
+        
+        recentComplaints.forEach(complaint => {
+          const item = document.createElement('div');
+          item.className = 'complaint-item';
+          item.innerHTML = `
+            <div class="complaint-header">
+              <div class="complaint-title">${complaint.title}</div>
+              <div class="complaint-category">${complaint.category}</div>
+            </div>
+            <div class="complaint-desc">
+              ${complaint.description}
+            </div>
+            <div class="complaint-meta">
+              <div><i class="fas fa-clock me-1"></i>${formatDate(complaint.timestamp)}</div>
+              <div class="status-badge status-${complaint.status.toLowerCase().replace(' ', '-')}">${complaint.status}</div>
+            </div>
+          `;
+          complaintsList.appendChild(item);
+        });
+        
+        document.getElementById('complaintCount').textContent = recentComplaints.length;
+      }
+      
+      // Render complaints for admin
+      function renderAdminComplaints() {
+        adminComplaintsList.innerHTML = '';
+        
+        // Apply filters
+        let filteredComplaints = [...complaints];
+        
+        if (filterCategory.value) {
+          filteredComplaints = filteredComplaints.filter(c => c.category === filterCategory.value);
+        }
+        
+        if (filterStatus.value) {
+          filteredComplaints = filteredComplaints.filter(c => c.status === filterStatus.value);
+        }
+        
+        filteredComplaints.forEach(complaint => {
+          const item = document.createElement('div');
+          item.className = 'complaint-item';
+          item.innerHTML = `
+            <div class="complaint-header">
+              <div class="complaint-title">${complaint.title}</div>
+              <div class="complaint-category">${complaint.category}</div>
+            </div>
+            <div class="complaint-desc">
+              ${complaint.description}
+            </div>
+            <div class="complaint-meta">
+              <div><i class="fas fa-clock me-1"></i>${formatDate(complaint.timestamp)}</div>
+              <div class="d-flex align-items-center">
+                <select class="admin-select status-select" data-id="${complaint.id}">
+                  <option value="Submitted" ${complaint.status === 'Submitted' ? 'selected' : ''}>Submitted</option>
+                  <option value="Under Review" ${complaint.status === 'Under Review' ? 'selected' : ''}>Under Review</option>
+                  <option value="Escalated" ${complaint.status === 'Escalated' ? 'selected' : ''}>Escalated</option>
+                  <option value="Resolved" ${complaint.status === 'Resolved' ? 'selected' : ''}>Resolved</option>
+                </select>
+              </div>
+            </div>
+          `;
+          adminComplaintsList.appendChild(item);
+        });
+        
+        document.getElementById('adminComplaintCount').textContent = filteredComplaints.length;
+        
+        // Add event listeners to status selects
+        document.querySelectorAll('.status-select').forEach(select => {
+          select.addEventListener('change', function() {
+            const id = parseInt(this.getAttribute('data-id'));
+            const newStatus = this.value;
+            updateComplaintStatus(id, newStatus);
+          });
+        });
+      }
+      
+      // Update complaint status
+      function updateComplaintStatus(id, newStatus) {
+        complaints = complaints.map(complaint => {
+          if (complaint.id === id) {
+            return { ...complaint, status: newStatus };
+          }
+          return complaint;
+        });
+        
+        localStorage.setItem('complaints', JSON.stringify(complaints));
+        renderAdminComplaints();
+        showNotification('Status Updated', `Complaint status changed to ${newStatus}`, true);
+      }
+      
+      // Format date for display
+      function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', { 
+          month: 'short', 
+          day: 'numeric',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      }
+      
+      // Submit new complaint
+      reportForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Get form values
+        const category = document.getElementById('category').value;
+        const title = document.getElementById('title').value;
+        const description = document.getElementById('description').value;
+        
+        // Create new complaint
+        const newComplaint = {
+          id: Date.now(),
+          category,
+          title,
+          description,
+          timestamp: new Date().toISOString(),
+          status: "Submitted"
+        };
+        
+        // Add to complaints
+        complaints.unshift(newComplaint);
+        localStorage.setItem('complaints', JSON.stringify(complaints));
+        
+        // Update UI
+        renderStudentComplaints();
+        
+        // Reset form
+        reportForm.reset();
+        
+        // Show success message
+        showNotification('Report Submitted', 'Your complaint has been submitted anonymously', true);
+      });
+      
+      // Admin login
+      adminLoginForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        
+        if (username === 'admin' && password === 'admin123') {
+          // Show admin dashboard
+          tabs.forEach(t => t.classList.remove('active'));
+          views.forEach(v => v.classList.remove('active'));
+          adminDashboardView.classList.add('active');
+          
+          // Render admin complaints
+          renderAdminComplaints();
+        } else {
+          showNotification('Login Failed', 'Invalid username or password', false);
+        }
+      });
+      
+      // Admin logout
+      logoutBtn.addEventListener('click', function() {
+        // Clear form
+        adminLoginForm.reset();
+        
+        // Switch to login view
+        tabs.forEach(t => t.classList.remove('active'));
+        document.querySelector('[data-view="adminLoginView"]').classList.add('active');
+        views.forEach(v => v.classList.remove('active'));
+        document.getElementById('adminLoginView').classList.add('active');
+      });
+      
+      // Filter complaints
+      filterCategory.addEventListener('change', renderAdminComplaints);
+      filterStatus.addEventListener('change', renderAdminComplaints);
+      
+      // Reset filters
+      resetFilters.addEventListener('click', function() {
+        filterCategory.value = '';
+        filterStatus.value = '';
+        renderAdminComplaints();
+      });
+      
+      // Initial render
+      renderStudentComplaints();
+    });
+  </script>
+</body>
+</html>
