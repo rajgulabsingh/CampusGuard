@@ -30,6 +30,12 @@ Once logged in, the admin dashboard will display all complaints and allow status
 
 ---
 
+## 🌐 Live Demo
+
+🎯 [Click here to try CampusGuard](https://rajgulabsingh.github.io/CampusGuard/)
+
+---
+
 ## 🧠 Tech Stack
 
 - HTML5
