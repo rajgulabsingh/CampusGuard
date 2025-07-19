@@ -1,8 +1,8 @@
-# 🎓 VoiceIt LPU – Anonymous Student Reporting Platform
+# 🎓 CampusGuard – Anonymous Student Reporting Platform
 
 > Built for the EventEye Hackathon at LPU
 
-VoiceIt LPU is an anonymous reporting platform designed to help students securely and confidently report incidents like harassment, ragging, mental health concerns, and more — without revealing their identity.  
+CampusGuard is an anonymous reporting platform designed to help students securely and confidently report incidents like harassment, ragging, mental health concerns, and more — without revealing their identity.  
 This web app ensures privacy while offering a way for campus authorities to view and manage complaints efficiently.
 
 ---
